@@ -75,7 +75,7 @@ The Laravel framework is open-source software licensed under the [MIT license](h
 
 This project is simple CRUD for Companies and employees with login and authentication implemented within.
 
-##Installation process
+## Installation process and data setup
 Basic command and steps to run project from repository
 - Clone using git repository.
 - composer install  -- command assuming you have already composer installed globally
@@ -86,7 +86,7 @@ Basic command and steps to run project from repository
 - Login using credentials
 
 
-##Functionality
+## Purpose
 Main functionality is to  handle operation for company and employees related to company
 - On company page you can see all company records in table and add button ( Used to create new record of company )
 - On Employee page same layout to add employees for company.
