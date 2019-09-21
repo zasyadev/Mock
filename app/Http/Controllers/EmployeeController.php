@@ -9,7 +9,9 @@ use App\Companies;
 
 class EmployeeController extends Controller
 {
-
+    /**
+     * Constructor for the EmployeeController package
+     */
     public function __construct()
     {
         view()->share('module', 'employee');
@@ -19,8 +21,14 @@ class EmployeeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index(Request $request)
+    {  
+        if ( isset($request->company_id) ) {
+            $request->session()->put('company_id', $request->company_id);
+        } else {
+            $request->session()->put('company_id', 0);
+        }
+        
         return view('site.employee.index');
     }
 
@@ -146,14 +154,20 @@ class EmployeeController extends Controller
             $order_direction = 'asc';
         }
 
+        if ($request->session()->has('company_id') && $request->session()->get('company_id')) {
+            $employees = Employees::where('company_id', $request->session()->get('company_id'));
+        } else {
+            $employees = new Employees;
+        }
+        
         if ( isset( $search['value'] ) && !empty( $search['value'] ) ) {
             $value = $search['value'];
-            $data = Employees::where(function( $query ) use($value) {
+            $data = -$employees->where(function( $query ) use($value) {
                 $query->where('name', 'like', '%'.$value.'%')
                         ->orWhere('email', 'like', '%'.$value.'%');
             })->get();
         } else {
-            $data = Employees::get();
+            $data = $employees->get();
         }
         $data = $data->map(function($value) {
             return [

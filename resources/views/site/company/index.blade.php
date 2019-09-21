@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="row">
-        <a href="/{{$type}}/create" class="btn btn-primary" title="add new"><i class="fa fa-plus"></i>Add</a>
+        <a href="/{{$module}}/create" class="btn btn-sm btn-primary" title="add new"><i class="fa fa-plus"></i>&nbsp;Add</a>
     </div>
     <table id="company_table">
         <thead>
@@ -36,27 +36,32 @@
                 "order": [],
                 "bDestroy": true,
                 stateSave: true,
-                "ajax" : '/{{$type}}/data',
+                "ajax" : '/{{$module}}/data',
                 "columnDefs": [
                     {
                         "targets": -1,
                         "data": null,
-                        "defaultContent": '<a href="javascript:void(0);" class="edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>&nbsp;<a href="javascript:void(0);" class="delete" ><i class="fa fa-times" aria-hidden="true"></i></a>'
+                        "defaultContent": '</a>&nbsp;<a href="javascript:void(0);" title="employees" class="employee" ><i class="fa fa-users" aria-hidden="true"></i></a><a href="javascript:void(0);" class="edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>&nbsp;<a href="javascript:void(0);" class="delete" ><i class="fa fa-times" aria-hidden="true"></i></a>'
                     }
                 ]
             });
         $('#company_table tbody').on('click', '.edit', function() {
                 let data    = table.row( $(this).parents('tr') ).data();
                 let id      = data.id;  
-                location.href  = '/{{$type}}/'+id + '/edit';
+                location.href  = '/{{$module}}/'+id + '/edit';
             })
         $('#company_table tbody').on('click', '.delete', function() {
+                let data  = table.row($(this).parents('tr')).data();
+                let id      = data.id;  
+                // var form = document.querySelectorAll('#delete_form');
+                $('#delete_form').attr('action', '/{{$module}}/'+id);
+                $('#delete_form').submit();
+            });
+        $('#company_table tbody').on('click', '.employee', function() {
             let data  = table.row($(this).parents('tr')).data();
             let id      = data.id;  
-            // var form = document.querySelectorAll('#delete_form');
-            $('#delete_form').attr('action', '/{{$type}}/'+id);
-            $('#delete_form').submit();
-        })
+            location.href  = 'employee?company_id='+id;
+        });
         })
     </script>
 @endpush

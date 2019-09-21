@@ -10,7 +10,7 @@ class CompanyController extends Controller
 {
     public function __construct()
     {
-        view()->share('type', 'company');
+        view()->share('module', 'company');
     }
     /**
      * Display a listing of the resource.
