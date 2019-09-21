@@ -20,5 +20,5 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/company/data', 'CompanyController@data');
 Route::resource('company', 'CompanyController');
-
+Route::get('/employee/data', 'EmployeeController@data');
 Route::resource('employee', 'EmployeeController');

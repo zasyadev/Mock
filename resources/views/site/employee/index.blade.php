@@ -3,9 +3,9 @@
 @section('content')
 <div class="container">
     <div class="row">
-        <a href="/{{$type}}/create" class="btn btn-primary" title="add new"><i class="fa fa-plus"></i>Add</a>
+        <a href="/{{$module}}/create" class="btn btn-primary" title="add new"><i class="fa fa-plus"></i>Add</a>
     </div>
-    <table id="company_table">
+    <table id="employee_table">
         <thead>
             <!-- <tr>Id</tr>
             <tr>Name</tr>
@@ -15,7 +15,6 @@
         <tbody>
         </tbody>
     </table>
-
     <form action="" method="POST" type="_hidden" id="delete_form">
     {{ csrf_field() }}
         @method('DELETE')
@@ -24,11 +23,13 @@
 @push('js')
     <script type="text/javascript">
         $(document).ready(() => {
-            var table = $('#company_table').DataTable({
+            var table = $('#employee_table').DataTable({
                 "columns": [
                     {title: 'ID',data: 'id', name: 'id'},
                     {title: 'Name',data: 'name', name: 'name'},
+                    {title: 'Company', data: 'company', name: 'company'},
                     {title: 'Email', data: 'email', name: 'email'},
+                    {title: 'Phone', data: 'phone', name: 'phone'},
                     {title: 'Actions'}
                 ],
                 "processing": true,
@@ -36,7 +37,7 @@
                 "order": [],
                 "bDestroy": true,
                 stateSave: true,
-                "ajax" : '/{{$type}}/data',
+                "ajax" : '/{{$module}}/data',
                 "columnDefs": [
                     {
                         "targets": -1,
@@ -45,17 +46,16 @@
                     }
                 ]
             });
-        $('#company_table tbody').on('click', '.edit', function() {
+        $('#employee_table tbody').on('click', 'a', function() {
                 let data    = table.row( $(this).parents('tr') ).data();
                 let id      = data.id;  
-                location.href  = '/{{$type}}/'+id + '/edit';
+                location.href  = '/{{$module}}/'+id + '/edit';
             })
-        $('#company_table tbody').on('click', '.delete', function() {
+        $('#employee_table tbody').on('click', '.delete', function() {
             let data  = table.row($(this).parents('tr')).data();
             let id      = data.id;  
-            // var form = document.querySelectorAll('#delete_form');
-            $('#delete_form').attr('action', '/{{$type}}/'+id);
-            $('#delete_form').submit();
+            $('#delete_form').attr('action', '/{{$module}}/'+id);
+            $('#delete_form').submit(); 
         })
         })
     </script>

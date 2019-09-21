@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Employees;
 
 class Companies extends Model
 {
@@ -25,7 +26,12 @@ class Companies extends Model
      *
      * @var bool
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = ['name', 'email', 'logo'];
+
+    public function employees()
+    {
+        return $this->hasMany(Employees::class, 'company_id', 'id');
+    }
 }

@@ -3,9 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Employees;
+use App\Http\Requests\EmployeeRequest;
+use App\Companies;
 
 class EmployeeController extends Controller
 {
+
+    public function __construct()
+    {
+        view()->share('module', 'employee');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +21,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        //
+        return view('site.employee.index');
     }
 
     /**
@@ -23,7 +31,7 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        //
+        return view('site.employee.select', [ 'type' => 'create', 'companies' => Companies::all() ]);
     }
 
     /**
@@ -32,9 +40,18 @@ class EmployeeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(EmployeeRequest $request)
     {
-        //
+        $employee               = new Employees;
+        $employee->first_name   = $request->first_name;
+        $employee->last_name    = $request->last_name;
+        $employee->email        = $request->email;
+        $employee->company_id   = $request->company_id;
+        $employee->phone        = $request->phone;
+        if ( $employee->save() ) {
+            return redirect()->to('/employee')->with('success', 'Employee added successfully');
+        }
+        return back()->with('Oop\'s Something went wrong.');
     }
 
     /**
@@ -56,7 +73,12 @@ class EmployeeController extends Controller
      */
     public function edit($id)
     {
-        //
+        if ( $id ) {
+            $employee = Employees::where('id', $id)->first();
+            
+            return view('site.employee.select')->with([ 'type' => 'update', 'employee' => $employee, 'companies' => Companies::all() ]);
+        }
+        return redirect()->back()->with('error', 'Invalid id for employee.');
     }
 
     /**
@@ -66,9 +88,23 @@ class EmployeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(EmployeeRequest $request, $id)
     {
-        //
+        if ( $id && Employees::where('id', $id)->exists() ) {
+            $employee               = Employees::where('id', $id)->first();
+        } else {
+            $employee               = new Employees;
+        }
+        
+        $employee->first_name   = $request->first_name;
+        $employee->last_name    = $request->last_name;
+        $employee->email        = $request->email;
+        $employee->company_id   = $request->company_id;
+        $employee->phone        = $request->phone;
+        if ( $employee->save() ) {
+            return redirect()->to('/employee')->with('success', 'Employee updated successfully');
+        }
+        return back()->with('Oop\'s Something went wrong.');
     }
 
     /**
@@ -79,6 +115,62 @@ class EmployeeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if ( $id && Employees::where('id', $id)->delete() ) {
+            return redirect()->back();
+        }
+        return redirect()->back()->with('error', 'Oop\'s something went wrong');
+    }
+
+    /**
+     * To fetch Employee data for table
+     */
+    public function data(Request $request) 
+    {   
+        //Fetching all inputs from request
+        $draw   = $request->input( 'draw' );
+        $order  = $request->input( 'order' );
+        $start  = $request->input( 'start', 0 );
+        $length = $request->input( 'length' );
+        $search = $request->input( 'search' );
+        $secho  = $request->input( 'sEcho' );
+        $date   = $request->input( 'date' );
+        $status   = $request->input( 'status' );
+
+        $order_column    = $order[ 0 ][ 'column' ];
+        $order_direction = $order[ 0 ][ 'dir' ];
+
+        if ( empty( $order_column ) ) {
+            $order_column = '0';
+        }
+        if ( empty( $order_direction ) ) {
+            $order_direction = 'asc';
+        }
+
+        if ( isset( $search['value'] ) && !empty( $search['value'] ) ) {
+            $value = $search['value'];
+            $data = Employees::where(function( $query ) use($value) {
+                $query->where('name', 'like', '%'.$value.'%')
+                        ->orWhere('email', 'like', '%'.$value.'%');
+            })->get();
+        } else {
+            $data = Employees::get();
+        }
+        $data = $data->map(function($value) {
+            return [
+                'id'        => $value->id,
+                'name'      => $value->name,
+                'company'   => $value->company->name,
+                'email'     => $value->email,
+                'phone'     => $value->phone
+            ];
+        });
+        $count = count($data);
+
+        return response()->json([
+            "draw" => 1,
+            "recordsTotal" => $count,
+            "recordsFiltered" => $count,
+            "data" => $data
+        ]);
     }
 }
