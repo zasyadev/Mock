@@ -11,7 +11,7 @@
     </div>
     <div class="form-group">        
         <label for="exampleInputEmail1">Email</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email" @if( isset($company) && !is_null($company)) value="{{$company->email}}" @else value="{{old('name')}}" @endif placeholder="Enter email" required>
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email" @if( isset($company) && !is_null($company)) value="{{$company->email}}" @else value="{{old('email')}}" @endif placeholder="Enter email" required>
     </div>
     @if (isset($company) &&  !is_null($company) && isset($company->logo)) 
     <div class="form-group"> 
